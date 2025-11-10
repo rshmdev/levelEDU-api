@@ -8,6 +8,13 @@ export const createAttitude = async (req, res) => {
   try {
     const { isPositive, coins, xp, title, description, classId } = req.body;
 
+    // Verificar se tenantId está disponível
+    if (!req.tenant || !req.tenant.id) {
+      return res.status(400).json({ 
+        message: 'Informações de tenant não encontradas. Verifique os headers x-tenant-id ou x-tenant-subdomain.' 
+      });
+    }
+
     const classExists = await Class.findById(classId);
     if (!classExists) {
       return res.status(404).json({ message: 'Turma não encontrada!' });
@@ -20,6 +27,7 @@ export const createAttitude = async (req, res) => {
       title,
       description,
       classId,
+      tenantId: req.tenant.id  // Adicionar tenantId do middleware
     });
     await attitude.save();
 
@@ -38,6 +46,13 @@ export const assignAttitudeToStudents = async (req, res) => {
   try {
     const { attitudeId, studentIds } = req.body;
 
+    // Verificar se tenantId está disponível
+    if (!req.tenant || !req.tenant.id) {
+      return res.status(400).json({ 
+        message: 'Informações de tenant não encontradas. Verifique os headers x-tenant-id ou x-tenant-subdomain.' 
+      });
+    }
+
     // Verifica se a atitude existe
     const attitude = await Attitude.findById(attitudeId);
     if (!attitude) {
@@ -55,7 +70,12 @@ export const assignAttitudeToStudents = async (req, res) => {
       const alreadyAssigned = await AttitudeAssignment.findOne({ attitudeId, studentId });
 
       if (!alreadyAssigned) {
-        await AttitudeAssignment.create({ attitudeId, studentId, isClaimed: false });
+        await AttitudeAssignment.create({ 
+          attitudeId, 
+          studentId, 
+          isClaimed: false,
+          tenantId: req.tenant.id  // Adicionar tenantId
+        });
       }
     }
 
@@ -75,9 +95,16 @@ export const updateAttitude = async (req, res) => {
     const { id } = req.params;
     const { isPositive, coins, xp, title, description, classId } = req.body;
 
+    // Verificar se tenantId está disponível
+    if (!req.tenant || !req.tenant.id) {
+      return res.status(400).json({ 
+        message: 'Informações de tenant não encontradas. Verifique os headers x-tenant-id ou x-tenant-subdomain.' 
+      });
+    }
+
     const attitude = await Attitude.findByIdAndUpdate(
       id,
-      { isPositive, coins, xp, title, description, classId },
+      { isPositive, coins, xp, title, description, classId, tenantId: req.tenant.id },
       { new: true }
     );
 

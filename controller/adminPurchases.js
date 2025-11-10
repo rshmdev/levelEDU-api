@@ -22,11 +22,20 @@ export const getPendingPurchases = async (req, res) => {
   export const deliverPurchase = async (req, res) => {
     try {
       const { purchaseId } = req.params;
+
+      // Verificar se tenantId está disponível
+      if (!req.tenant || !req.tenant.id) {
+        return res.status(400).json({ 
+          message: 'Informações de tenant não encontradas. Verifique os headers x-tenant-id ou x-tenant-subdomain.' 
+        });
+      }
   
       const purchase = await Purchase.findById(purchaseId);
       if (!purchase) return res.status(404).json({ message: 'Compra não encontrada!' });
   
       purchase.isDelivered = true;
+      // Garantir que tenantId esteja presente
+      purchase.tenantId = req.tenant.id;
       await purchase.save();
   
       res.status(200).json({ message: 'Compra marcada como entregue!', purchase });

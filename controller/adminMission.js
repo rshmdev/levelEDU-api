@@ -7,6 +7,13 @@ export const createMission = async (req, res) => {
   try {
     const { title, description, coins, classId } = req.body;
 
+    // Verificar se tenantId está disponível
+    if (!req.tenant || !req.tenant.id) {
+      return res.status(400).json({ 
+        message: 'Informações de tenant não encontradas. Verifique os headers x-tenant-id ou x-tenant-subdomain.' 
+      });
+    }
+
     // Verifica se a turma existe
     const classExists = await Class.findById(classId);
     if (!classExists) {
@@ -14,7 +21,13 @@ export const createMission = async (req, res) => {
     }
 
     // Criando a missão vinculada à turma
-    const mission = new Mission({ title, description, coins, classId });
+    const mission = new Mission({ 
+      title, 
+      description, 
+      coins, 
+      classId,
+      tenantId: req.tenant.id  // Adicionar tenantId do middleware
+    });
     await mission.save();
 
     res.status(201).json({ message: 'Missão criada com sucesso!', mission });
@@ -29,9 +42,16 @@ export const updateMission = async (req, res) => {
     const { id } = req.params;
     const { title, description, coins } = req.body;
 
+    // Verificar se tenantId está disponível
+    if (!req.tenant || !req.tenant.id) {
+      return res.status(400).json({ 
+        message: 'Informações de tenant não encontradas. Verifique os headers x-tenant-id ou x-tenant-subdomain.' 
+      });
+    }
+
     const mission = await Mission.findByIdAndUpdate(
       id,
-      { title, description, coins },
+      { title, description, coins, tenantId: req.tenant.id },
       { new: true }
     );
 

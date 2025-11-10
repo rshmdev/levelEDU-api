@@ -156,6 +156,13 @@ export const updateAdminUser = async (req, res) => {
     const { id } = req.params;
     const { name, email, password, role, classrooms } = req.body;
 
+    // Verificar se tenantId está disponível
+    if (!req.tenant || !req.tenant.id) {
+      return res.status(400).json({ 
+        message: 'Informações de tenant não encontradas. Verifique os headers x-tenant-id ou x-tenant-subdomain.' 
+      });
+    }
+
     const adminUser = await AdminUser.findById(id);
     if (!adminUser) {
       return res.status(404).json({ message: 'Professor não encontrado!' });
@@ -182,6 +189,8 @@ export const updateAdminUser = async (req, res) => {
       adminUser.classrooms = validClassrooms.map((c) => c._id);
     }
 
+    // Garantir que tenantId esteja presente
+    adminUser.tenantId = req.tenant.id;
     await adminUser.save();
 
     res
