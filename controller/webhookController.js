@@ -4,6 +4,7 @@ import User from '../Models/userModel.js';
 import AdminUser from '../Models/adminUserModel.js';
 import Subscription from '../Models/subscriptionModel.js';
 import emailService from '../services/emailService.js';
+import { getPlanByStripePrice, getPlanByPrice } from '../services/stripeService.js';
 import httpStatus from 'http-status';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -65,24 +66,25 @@ export const handleStripeWebhook = async (req, res) => {
 // Função auxiliar para mapear planos
 const mapPlanName = (planName) => {
   const planMap = {
-    'starter': 'basic',
+    'trial': 'trial',
+    'starter': 'starter',
     'professional': 'professional', 
-    'enterprise': 'enterprise',
-    'trial': 'trial'
+    'growth': 'growth',
+    'enterprise': 'enterprise'
   };
-  return planMap[planName?.toLowerCase()] || 'professional';
+  return planMap[planName?.toLowerCase()] || 'trial';
 };
 
 // Função auxiliar para mapear planos para subscription
 const mapSubscriptionPlan = (planName) => {
   const planMap = {
+    'trial': 'trial',
     'starter': 'escolar',
-    'basic': 'escolar',
     'professional': 'educacional', 
-    'enterprise': 'institucional',
-    'trial': 'trial'
+    'growth': 'avancado',
+    'enterprise': 'institucional'
   };
-  return planMap[planName?.toLowerCase()] || 'educacional';
+  return planMap[planName?.toLowerCase()] || 'trial';
 };
 
 // Função auxiliar para converter timestamp do Stripe
@@ -120,9 +122,9 @@ const handleCheckoutSessionCompleted = async (session) => {
 
     console.log(`🏗️ Criando tenant e usuário para: ${customerEmail}`);
 
-    // Mapear o plano corretamente
-    const mappedPlan = mapPlanName(planName);
-    console.log(`📋 Plano mapeado: ${planName} → ${mappedPlan}`);
+    // Mapear o plano corretamente - usar planName do metadata ou fallback
+    const mappedPlan = mapPlanName(planName || 'trial');
+    console.log(`📋 Plano mapeado: ${planName || 'trial'} → ${mappedPlan}`);
 
     // Criar ou atualizar tenant
     let tenant = await Tenant.findOne({ subdomain: tenantSubdomain });
@@ -244,25 +246,34 @@ const handleSubscriptionCreated = async (subscription) => {
       return;
     }
 
-    // Mapear plano para subscription
-    const planName = subscription.metadata?.planName || 'professional';
-    const mappedSubscriptionPlan = mapSubscriptionPlan(planName);
+    // Identificar plano pelo Stripe Price ID
+    const stripePriceId = subscription.items.data[0]?.price?.id;
+    const priceAmount = subscription.items.data[0]?.price?.unit_amount || 0;
     
-    console.log(`📋 Plano subscription mapeado: ${planName} → ${mappedSubscriptionPlan}`);
+    // Tentar identificar pelo Price ID primeiro, depois pelo valor
+    let planInfo = getPlanByStripePrice(stripePriceId);
+    if (planInfo.id === 'trial' && priceAmount > 0) {
+      // Se não encontrou pelo Price ID, tenta pelo valor
+      const interval = subscription.items.data[0]?.price?.recurring?.interval;
+      planInfo = getPlanByPrice(priceAmount, interval === 'year');
+    }
+
+    // Mapear plano para subscription
+    const mappedSubscriptionPlan = mapSubscriptionPlan(planInfo.id);
+    
+    console.log(`📋 Plano identificado: ${planInfo.name} (${planInfo.id}) → ${mappedSubscriptionPlan}`);
 
     // Criar/atualizar registro de subscription
     const subscriptionData = {
       tenantId: tenant._id,
       stripeCustomerId: customerId,
       stripeSubscriptionId: subscription.id,
-      stripePriceId: subscription.items.data[0]?.price?.id,
+      stripePriceId: stripePriceId,
       plan: mappedSubscriptionPlan,
-      planName: planName === 'starter' ? 'Starter' : 
-                planName === 'professional' ? 'Professional' : 
-                planName === 'enterprise' ? 'Enterprise' : 'Professional',
+      planName: planInfo.name,
       status: subscription.status,
-      priceMonthly: subscription.items.data[0]?.price?.unit_amount || 0,
-      currency: subscription.currency || 'BRL',
+      priceMonthly: priceAmount,
+      currency: subscription.currency || 'brl',
       currentPeriodStart: convertStripeTimestamp(subscription.current_period_start),
       currentPeriodEnd: convertStripeTimestamp(subscription.current_period_end),
       trialStart: convertStripeTimestamp(subscription.trial_start),

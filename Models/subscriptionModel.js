@@ -28,7 +28,7 @@ const subscriptionSchema = new mongoose.Schema(
     // Informações do plano
     plan: {
       type: String,
-      enum: ['trial', 'escolar', 'educacional', 'institucional'],
+      enum: ['trial', 'escolar', 'educacional', 'avancado', 'institucional'],
       required: true
     },
     planName: {

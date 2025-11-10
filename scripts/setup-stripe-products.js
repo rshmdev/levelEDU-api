@@ -16,30 +16,37 @@ const PLANS_TO_CREATE = [
   {
     id: 'trial',
     name: 'Trial',
-    description: 'Período de teste gratuito de 30 dias',
+    description: 'Período de avaliação gratuita de 30 dias com acesso completo aos recursos essenciais',
     priceMonthly: 0,
     priceYearly: 0,
   },
   {
     id: 'starter',
     name: 'Starter',
-    description: 'Perfeito para escolas pequenas começando a usar o LevelEdu',
-    priceMonthly: 9900, // R$ 99,00
-    priceYearly: 99000, // R$ 990,00 (10 meses)
+    description: 'Solução completa para escolas que buscam modernizar sua gestão educacional com tecnologia avançada',
+    priceMonthly: 29900, // R$ 299,00
+    priceYearly: 299000, // R$ 2.990,00 (10 meses)
   },
   {
     id: 'professional',
     name: 'Professional',
-    description: 'Ideal para escolas em crescimento que precisam de mais recursos',
-    priceMonthly: 19900, // R$ 199,00
-    priceYearly: 199000, // R$ 1.990,00 (10 meses)
+    description: 'Plataforma robusta para instituições em crescimento que necessitam de recursos avançados de gestão',
+    priceMonthly: 69900, // R$ 699,00
+    priceYearly: 699000, // R$ 6.990,00 (10 meses)
+  },
+  {
+    id: 'growth',
+    name: 'Growth',
+    description: 'Solução premium com personalização da marca, análises avançadas e integrações corporativas',
+    priceMonthly: 99900, // R$ 999,00
+    priceYearly: 999000, // R$ 9.990,00 (10 meses)
   },
   {
     id: 'enterprise',
     name: 'Enterprise',
-    description: 'Para grandes instituições que precisam de recursos avançados e suporte dedicado',
-    priceMonthly: 39900, // R$ 399,00
-    priceYearly: 399000, // R$ 3.990,00 (10 meses)
+    description: 'Solução empresarial customizada com suporte dedicado, API completa e implementação personalizada',
+    priceMonthly: 199900, // R$ 1.999,00 (preço inicial, será negociado)
+    priceYearly: 1999000, // R$ 19.990,00 (preço inicial, será negociado)
   }
 ];
 

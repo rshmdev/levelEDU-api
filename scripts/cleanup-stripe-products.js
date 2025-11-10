@@ -25,6 +25,7 @@ async function cleanupStripeProducts() {
       product.name.includes('Trial') ||
       product.name.includes('Starter') ||
       product.name.includes('Professional') ||
+      product.name.includes('Growth') ||
       product.name.includes('Enterprise')
     );
     

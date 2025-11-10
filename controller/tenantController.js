@@ -430,20 +430,29 @@ function getDefaultLimits(planType) {
       apiAccess: false,
       customDomain: false,
     },
-    basic: {
+    starter: {
       maxUsers: 100,
       maxClasses: 10,
-      maxMissions: 100,
+      maxMissions: -1, // Ilimitado
       maxStorage: 500,
-      customBranding: true,
+      customBranding: false,
       apiAccess: false,
       customDomain: false,
     },
     professional: {
       maxUsers: 500,
-      maxClasses: 50,
-      maxMissions: 1000,
+      maxClasses: 25,
+      maxMissions: -1, // Ilimitado
       maxStorage: 2000,
+      customBranding: true,
+      apiAccess: false,
+      customDomain: false,
+    },
+    growth: {
+      maxUsers: 1000,
+      maxClasses: 50,
+      maxMissions: -1, // Ilimitado
+      maxStorage: 5000,
       customBranding: true,
       apiAccess: true,
       customDomain: false,

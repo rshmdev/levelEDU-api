@@ -13,85 +13,115 @@ const PLANS_CONFIG = {
   trial: {
     id: 'trial',
     name: 'Trial',
-    description: 'Período de teste gratuito de 30 dias',
+    description: 'Período de avaliação gratuita de 30 dias com acesso completo aos recursos essenciais',
     priceMonthly: 0,
     priceYearly: 0,
     stripePriceMonthlyId: null,
     stripePriceYearlyId: null,
     features: [
-      "Até 10 alunos", "2 turmas", "10 missões", "Funcionalidades básicas"
+      "Até 10 alunos", "2 turmas", "10 missões básicas", "Dashboard completo", "Suporte por email"
     ],
     limits: {
       maxStudents: 10,
-      maxTeachers: 1,
+      maxTeachers: 2,
       maxAdmins: 1
     },
   },
   starter: {
     id: 'starter',
     name: 'Starter',
-    description: 'Perfeito para escolas pequenas começando a usar o LevelEdu',
-    priceMonthly: 9900, // R$ 99,00 em centavos
-    priceYearly: 99000, // R$ 990,00 em centavos (10 meses)
+    description: 'Solução completa para escolas que buscam modernizar sua gestão educacional com tecnologia avançada',
+    priceMonthly: 29900, // R$ 299,00 em centavos
+    priceYearly: 299000, // R$ 2.990,00 em centavos (10 meses)
     stripePriceMonthlyId: process.env.STRIPE_STARTER_PRICE_MONTHLY,
     stripePriceYearlyId: process.env.STRIPE_STARTER_PRICE_YEARLY,
     features: [
-      'Até 50 estudantes',
-      'Até 5 professores',
-      'Até 2 administradores',
-      '10 missões por mês',
-      'Relatórios básicos',
-      'Suporte por email'
+      'Até 100 estudantes',
+      'Até 10 professores',
+      'Até 3 administradores',
+      'Missões e atividades ilimitadas',
+      'Relatórios de desempenho',
+      'Suporte técnico especializado',
+      'Dashboard analítico completo',
+      'Sistema de gamificação avançado'
     ],
     limits: {
-      maxStudents: 50,
-      maxTeachers: 5,
-      maxAdmins: 2
+      maxStudents: 100,
+      maxTeachers: 10,
+      maxAdmins: 3
     }
   },
   professional: {
     id: 'professional',
     name: 'Professional',
-    description: 'Ideal para escolas em crescimento que precisam de mais recursos',
-    priceMonthly: 19900, // R$ 199,00 em centavos
-    priceYearly: 199000, // R$ 1.990,00 em centavos (10 meses)
+    description: 'Plataforma robusta para instituições em crescimento que necessitam de recursos avançados de gestão',
+    priceMonthly: 69900, // R$ 699,00 em centavos
+    priceYearly: 699000, // R$ 6.990,00 em centavos (10 meses)
     stripePriceMonthlyId: process.env.STRIPE_PROFESSIONAL_PRICE_MONTHLY,
     stripePriceYearlyId: process.env.STRIPE_PROFESSIONAL_PRICE_YEARLY,
     features: [
-      'Até 200 estudantes',
-      'Até 20 professores',
+      'Até 500 estudantes',
+      'Até 25 professores',
       'Até 5 administradores',
-      'Missões ilimitadas',
-      'Relatórios avançados',
-      'Personalização da marca',
+      'Atividades e missões ilimitadas',
+      'Relatórios avançados e analytics',
+      'Personalização básica da marca',
       'Suporte prioritário',
-      'Integrações com outras plataformas'
+      'Integrações com sistemas educacionais',
+      'Backup automático de dados'
     ],
     limits: {
-      maxStudents: 200,
-      maxTeachers: 20,
+      maxStudents: 500,
+      maxTeachers: 25,
       maxAdmins: 5
+    }
+  },
+  growth: {
+    id: 'growth',
+    name: 'Growth',
+    description: 'Solução premium com personalização da marca, análises avançadas e integrações corporativas',
+    priceMonthly: 99900, // R$ 999,00 em centavos
+    priceYearly: 999000, // R$ 9.990,00 em centavos (10 meses)
+    stripePriceMonthlyId: process.env.STRIPE_GROWTH_PRICE_MONTHLY,
+    stripePriceYearlyId: process.env.STRIPE_GROWTH_PRICE_YEARLY,
+    features: [
+      'Até 1.000 estudantes',
+      'Até 50 professores',
+      'Até 10 administradores',
+      'Recursos ilimitados',
+      'Analytics empresarial completo',
+      'White-label e personalização avançada',
+      'API básica para integrações',
+      'Integrações corporativas avançadas',
+      'Suporte prioritário dedicado',
+      'Treinamento da equipe incluído'
+    ],
+    limits: {
+      maxStudents: 1000,
+      maxTeachers: 50,
+      maxAdmins: 10
     }
   },
   enterprise: {
     id: 'enterprise',
     name: 'Enterprise',
-    description: 'Para grandes instituições que precisam de recursos avançados e suporte dedicado',
-    priceMonthly: 39900, // R$ 399,00 em centavos
-    priceYearly: 399000, // R$ 3.990,00 em centavos (10 meses)
+    description: 'Solução empresarial customizada com suporte dedicado, API completa e implementação personalizada',
+    priceMonthly: 199900, // R$ 1.999,00 em centavos (preço inicial)
+    priceYearly: 1999000, // R$ 19.990,00 em centavos (preço inicial)
     stripePriceMonthlyId: process.env.STRIPE_ENTERPRISE_PRICE_MONTHLY,
     stripePriceYearlyId: process.env.STRIPE_ENTERPRISE_PRICE_YEARLY,
     features: [
-      'Estudantes ilimitados',
-      'Professores ilimitados',
-      'Administradores ilimitados',
-      'Missões ilimitadas',
-      'Relatórios personalizados',
-      'White-label completo',
-      'API completa',
-      'Suporte 24/7',
-      'Gerente de conta dedicado',
-      'Treinamento personalizado'
+      'Usuários ilimitados',
+      'Recursos e funcionalidades ilimitados',
+      'Relatórios personalizados sob demanda',
+      'White-label completo e customização total',
+      'API completa com documentação dedicada',
+      'Suporte 24/7 com SLA garantido',
+      'Gerente de conta exclusivo',
+      'Customização e desenvolvimento sob medida',
+      'Treinamento personalizado presencial/online',
+      'Implementação assistida com consultoria',
+      'Infraestrutura dedicada opcional'
     ],
     limits: {
       maxStudents: -1,
@@ -388,7 +418,51 @@ export const formatCurrency = (amountInCents, currency = 'BRL') => {
 };
 
 export const getPlanConfig = (planName) => {
-  return PLANS_CONFIG[planName] || PLANS_CONFIG.starter;
+  return PLANS_CONFIG[planName] || PLANS_CONFIG.trial;
+};
+
+// Função para identificar plano pelo preço
+export const getPlanByPrice = (priceAmount, isYearly = false) => {
+  for (const [planId, config] of Object.entries(PLANS_CONFIG)) {
+    const targetPrice = isYearly ? config.priceYearly : config.priceMonthly;
+    if (targetPrice === priceAmount) {
+      return {
+        id: planId,
+        name: config.name,
+        config: config
+      };
+    }
+  }
+  
+  // Fallback para trial se não encontrar
+  return {
+    id: 'trial',
+    name: 'Trial',
+    config: PLANS_CONFIG.trial
+  };
+};
+
+// Função para identificar plano pelo Stripe Price ID
+export const getPlanByStripePrice = (stripePriceId) => {
+  for (const [planId, config] of Object.entries(PLANS_CONFIG)) {
+    if (config.stripePriceMonthlyId === stripePriceId || config.stripePriceYearlyId === stripePriceId) {
+      const isYearly = config.stripePriceYearlyId === stripePriceId;
+      return {
+        id: planId,
+        name: config.name,
+        config: config,
+        isYearly: isYearly
+      };
+    }
+  }
+  
+  // Fallback para trial se não encontrar
+  return {
+    id: 'trial',
+    name: 'Trial',
+    config: PLANS_CONFIG.trial,
+    isYearly: false
+  };
 };
 
 // Instância única do serviço
