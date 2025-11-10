@@ -12,6 +12,13 @@ export const createAdminUser = async (req, res) => {
   try {
     const { name, email, password, role, classrooms, sendWelcomeEmail = true } = req.body;
 
+    // Verificar se tenantId está disponível
+    if (!req.tenant || !req.tenant.id) {
+      return res.status(400).json({ 
+        message: 'Informações de tenant não encontradas. Verifique os headers x-tenant-id ou x-tenant-subdomain.' 
+      });
+    }
+
     const existingUser = await AdminUser.findOne({ email });
     if (existingUser)
       return res.status(400).json({ message: 'Email já está em uso!' });
@@ -51,6 +58,7 @@ export const createAdminUser = async (req, res) => {
       password: temporaryPassword,
       role,
       classrooms: validClassrooms.map((c) => c._id), // Garante que sejam ObjectIds válidos
+      tenantId: req.tenant.id  // Adicionar tenantId do middleware
     });
     await adminUser.save();
 
@@ -191,13 +199,26 @@ export const createUser = async (req, res) => {
   try {
     const { name, classId } = req.body;
 
+    // Verificar se tenantId está disponível
+    if (!req.tenant || !req.tenant.id) {
+      return res.status(400).json({ 
+        message: 'Informações de tenant não encontradas. Verifique os headers x-tenant-id ou x-tenant-subdomain.' 
+      });
+    }
+
     if (classId) {
       const existingClass = await Class.findById(classId);
       if (!existingClass) {
         return res.status(404).json({ message: 'Turma não encontrada!' });
       }
     }
-    const user = new User({ name, class: classId });
+
+    // Criar usuário com tenantId
+    const user = new User({ 
+      name, 
+      class: classId,
+      tenantId: req.tenant.id  // Adicionar tenantId do middleware
+    });
     await user.save();
 
     if (classId) {
@@ -216,6 +237,13 @@ export const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, classId } = req.body;
+
+    // Verificar se tenantId está disponível
+    if (!req.tenant || !req.tenant.id) {
+      return res.status(400).json({ 
+        message: 'Informações de tenant não encontradas. Verifique os headers x-tenant-id ou x-tenant-subdomain.' 
+      });
+    }
 
     const user = await User.findById(id);
     if (!user) {
@@ -240,6 +268,8 @@ export const updateUser = async (req, res) => {
     // Atualiza os dados do usuário
     const updatedData = { name };
     if (classId) updatedData.class = classId;
+    // Garantir que tenantId sempre esteja presente
+    updatedData.tenantId = req.tenant.id;
 
     const updatedUser = await User.findByIdAndUpdate(id, updatedData, {
       new: true,
