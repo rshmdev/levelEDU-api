@@ -8,6 +8,8 @@ import {
 } from '../controller/adminAttitude.js';
 import { authenticateUser, checkRole } from '../Middlewares/auth.js';
 import { tenantIsolation } from '../Middlewares/tenantAuth.js';
+import { allowTrialOrActiveSubscription } from '../Middlewares/subscriptionAuth.js';
+import { checkResourceLimit } from '../Middlewares/planLimits.js';
 
 const router = express.Router();
 
@@ -50,9 +52,9 @@ const router = express.Router();
  *       500:
  *         description: "Erro ao registrar atitude."
  */
-router.post('/attitudes', authenticateUser, tenantIsolation, checkRole(['tenant_admin', 'teacher']), createAttitude);
+router.post('/attitudes', authenticateUser, tenantIsolation, checkResourceLimit('attitude'), allowTrialOrActiveSubscription, checkRole(['tenant_admin', 'teacher']), createAttitude);
 
-router.post('/attitudes/reward', authenticateUser, tenantIsolation, checkRole(['tenant_admin', 'teacher']), assignAttitudeToStudents);
+router.post('/attitudes/reward', authenticateUser, tenantIsolation, allowTrialOrActiveSubscription, checkRole(['tenant_admin', 'teacher']), assignAttitudeToStudents);
 
 /**
  * @swagger
@@ -98,7 +100,7 @@ router.post('/attitudes/reward', authenticateUser, tenantIsolation, checkRole(['
  *       500:
  *         description: "Erro ao atualizar atitude."
  */
-router.put('/attitudes/:id', authenticateUser, tenantIsolation, checkRole(['tenant_admin', 'teacher']), updateAttitude);
+router.put('/attitudes/:id', authenticateUser, tenantIsolation, allowTrialOrActiveSubscription, checkRole(['tenant_admin', 'teacher']), updateAttitude);
 
 /**
  * @swagger
@@ -122,7 +124,7 @@ router.put('/attitudes/:id', authenticateUser, tenantIsolation, checkRole(['tena
  *       500:
  *         description: "Erro ao deletar atitude."
  */
-router.delete('/attitudes/:id', authenticateUser, tenantIsolation, checkRole(['tenant_admin']), deleteAttitude);
+router.delete('/attitudes/:id', authenticateUser, tenantIsolation, allowTrialOrActiveSubscription, checkRole(['tenant_admin']), deleteAttitude);
 
 /**
  * @swagger
@@ -142,6 +144,6 @@ router.delete('/attitudes/:id', authenticateUser, tenantIsolation, checkRole(['t
  *       500:
  *         description: "Erro ao buscar atitudes."
  */
-router.get('/attitudes', authenticateUser, tenantIsolation, checkRole(['tenant_admin', 'teacher']), getAttitudes);
+router.get('/attitudes', authenticateUser, tenantIsolation, allowTrialOrActiveSubscription, checkRole(['tenant_admin', 'teacher']), getAttitudes);
 
 export default router;

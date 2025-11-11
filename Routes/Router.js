@@ -27,6 +27,8 @@ import SubscriptionRouter from './subscriptionRoute.js'
 
 import WebhookRouter from './webhookRoute.js'
 
+import UsageRouter from './usageRoute.js'
+
 export default {
   AdminMissionRouter,
   MobileMissionRouter,
@@ -43,5 +45,6 @@ export default {
   TenantRouter,
   BillingRouter,
   SubscriptionRouter,
-  WebhookRouter
+  WebhookRouter,
+  UsageRouter
 };

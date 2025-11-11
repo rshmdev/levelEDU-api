@@ -8,6 +8,7 @@ import {
 } from '../controller/adminMission.js';
 import { authenticateUser, checkRole } from '../Middlewares/auth.js';
 import { tenantIsolation } from '../Middlewares/tenantAuth.js';
+import { checkResourceLimit } from '../Middlewares/planLimits.js';
 
 const router = express.Router();
 
@@ -41,7 +42,7 @@ const router = express.Router();
  *       500:
  *         description: "Erro ao criar missão."
  */
-router.post('/missions', authenticateUser, tenantIsolation, checkRole(['tenant_admin', 'teacher']), createMission);
+router.post('/missions', authenticateUser, tenantIsolation, checkResourceLimit('mission'), checkRole(['tenant_admin', 'teacher']), createMission);
 
 /**
  * @swagger

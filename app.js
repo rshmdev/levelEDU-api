@@ -50,6 +50,8 @@ app.use('/admin/auth', Router.AdminAuthUserRoute);
 
 app.use('/admin', Router.AdminClassRoute);
 
+app.use('/admin', Router.UsageRouter);
+
 app.use('/api/tenants', Router.TenantRouter);
 
 app.use('/api/billing', Router.BillingRouter);

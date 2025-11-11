@@ -11,6 +11,7 @@ import {
 } from '../controller/adminPurchases.js';
 import { authenticateUser, checkRole } from '../Middlewares/auth.js';
 import { tenantIsolation } from '../Middlewares/tenantAuth.js';
+import { checkResourceLimit } from '../Middlewares/planLimits.js';
 
 const router = express.Router();
 
@@ -54,7 +55,7 @@ const router = express.Router();
  *       500:
  *         description: "Erro ao criar produto."
  */
-router.post('/products', authenticateUser, tenantIsolation, checkRole(['tenant_admin']), createProduct);
+router.post('/products', authenticateUser, tenantIsolation, checkResourceLimit('product'), checkRole(['tenant_admin']), createProduct);
 
 /**
  * @swagger

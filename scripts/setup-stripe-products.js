@@ -40,13 +40,6 @@ const PLANS_TO_CREATE = [
     description: 'Solução premium com personalização da marca, análises avançadas e integrações corporativas',
     priceMonthly: 99900, // R$ 999,00
     priceYearly: 999000, // R$ 9.990,00 (10 meses)
-  },
-  {
-    id: 'enterprise',
-    name: 'Enterprise',
-    description: 'Solução empresarial customizada com suporte dedicado, API completa e implementação personalizada',
-    priceMonthly: 199900, // R$ 1.999,00 (preço inicial, será negociado)
-    priceYearly: 1999000, // R$ 19.990,00 (preço inicial, será negociado)
   }
 ];
 

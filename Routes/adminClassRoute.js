@@ -9,6 +9,8 @@ import {
 } from '../controller/adminClass.js';
 import { authenticateUser, checkRole } from '../Middlewares/auth.js'; // Middleware de autenticação
 import { tenantIsolation } from '../Middlewares/tenantAuth.js';
+import { allowTrialOrActiveSubscription } from '../Middlewares/subscriptionAuth.js';
+import { checkResourceLimit } from '../Middlewares/planLimits.js';
 
 const router = express.Router();
 
@@ -43,6 +45,8 @@ router.post(
   '/classes',
   authenticateUser,
   tenantIsolation,
+  allowTrialOrActiveSubscription,
+  checkResourceLimit('classe'),
   checkRole(['tenant_admin', 'teacher']),
   createClass
 );
@@ -86,6 +90,7 @@ router.put(
   '/classes/:id',
   authenticateUser,
   tenantIsolation,
+  allowTrialOrActiveSubscription,
   checkRole(['tenant_admin', 'teacher']),
   updateClass
 );
@@ -116,6 +121,7 @@ router.delete(
   '/classes/:id',
   authenticateUser,
   tenantIsolation,
+  allowTrialOrActiveSubscription,
   checkRole(['tenant_admin']),
   deleteClass
 );
@@ -142,6 +148,7 @@ router.get(
   '/classes',
   authenticateUser,
   tenantIsolation,
+  allowTrialOrActiveSubscription,
   checkRole(['tenant_admin', 'teacher']),
   getClasses
 );
@@ -178,6 +185,7 @@ router.get(
   '/classes/:id/students',
   authenticateUser,
   tenantIsolation,
+  allowTrialOrActiveSubscription,
   checkRole(['tenant_admin', 'teacher']),
   getStudentsByClass
 );
@@ -186,6 +194,7 @@ router.get(
   '/classes/:teacherId/teacher',
   authenticateUser,
   tenantIsolation,
+  allowTrialOrActiveSubscription,
   checkRole(['tenant_admin', 'teacher']),
   getClassByTeacher
 );

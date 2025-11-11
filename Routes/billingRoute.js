@@ -61,6 +61,15 @@ router.post('/cancel/:tenantId',
   cancelSubscription
 );
 
+// Cancelar assinatura (endpoint alternativo para compatibilidade)
+router.post('/subscription/:tenantId/cancel',
+  param('tenantId').isMongoId(),
+  body('immediate').optional().isBoolean(),
+  body('reason').optional().isLength({ max: 500 }),
+  // requireTenantAdmin,
+  cancelSubscription
+);
+
 // Reativar assinatura cancelada
 router.post('/reactivate/:tenantId',
   param('tenantId').isMongoId(),

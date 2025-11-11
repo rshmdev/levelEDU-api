@@ -1,6 +1,8 @@
 import express from 'express';
 import { authenticateUser, checkRole } from '../Middlewares/auth.js';
 import { tenantIsolation } from '../Middlewares/tenantAuth.js';
+import { allowTrialOrActiveSubscription } from '../Middlewares/subscriptionAuth.js';
+import { checkResourceLimit } from '../Middlewares/planLimits.js';
 import {
   createAdminUser,
   deleteAdminUser,
@@ -95,7 +97,7 @@ router.post('/login', loginAdminUser);
  *       500:
  *         description: "Erro ao criar usuário."
  */
-router.post('/register', authenticateUser, tenantIsolation, checkRole(['tenant_admin']), createAdminUser);
+router.post('/register', authenticateUser, tenantIsolation, allowTrialOrActiveSubscription, checkResourceLimit('admin'), checkRole(['tenant_admin']), createAdminUser);
 
 /**
  * @swagger
@@ -115,7 +117,7 @@ router.post('/register', authenticateUser, tenantIsolation, checkRole(['tenant_a
  *       500:
  *         description: "Erro ao buscar usuários."
  */
-router.get('/users', authenticateUser, tenantIsolation, checkRole(['tenant_admin', 'teacher']), getAdminUsers);
+router.get('/users', authenticateUser, tenantIsolation, allowTrialOrActiveSubscription, checkRole(['tenant_admin', 'teacher']), getAdminUsers);
 
 /**
  * @swagger
@@ -155,7 +157,7 @@ router.get('/users', authenticateUser, tenantIsolation, checkRole(['tenant_admin
  *       500:
  *         description: "Erro ao atualizar usuário."
  */
-router.put('/users/:id', authenticateUser, tenantIsolation, checkRole(['tenant_admin', 'teacher']), updateAdminUser);
+router.put('/users/:id', authenticateUser, tenantIsolation, allowTrialOrActiveSubscription, checkRole(['tenant_admin', 'teacher']), updateAdminUser);
 
 /**
  * @swagger
@@ -179,7 +181,7 @@ router.put('/users/:id', authenticateUser, tenantIsolation, checkRole(['tenant_a
  *       500:
  *         description: "Erro ao deletar usuário."
  */
-router.delete('/users/:id', authenticateUser, tenantIsolation, checkRole(['tenant_admin']), deleteAdminUser);
+router.delete('/users/:id', authenticateUser, tenantIsolation, allowTrialOrActiveSubscription, checkRole(['tenant_admin']), deleteAdminUser);
 
 /**
  * @swagger
@@ -219,6 +221,6 @@ router.post('/reset-password', resetPasswordByEmail);
  *       500:
  *         description: "Erro na configuração de email."
  */
-router.get('/test-email', authenticateUser, tenantIsolation, checkRole(['tenant_admin']), testEmailConfig);
+router.get('/test-email', authenticateUser, tenantIsolation, allowTrialOrActiveSubscription, checkRole(['tenant_admin']), testEmailConfig);
 
 export default router;
