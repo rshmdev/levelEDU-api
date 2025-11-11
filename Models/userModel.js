@@ -22,9 +22,17 @@ userSchema.methods.calculateLevel = function () {
   return level;
 };
 
+// Função para regenerar QR code com novo formato
+userSchema.methods.regenerateQRCode = async function () {
+  const qrData = `${this._id}|${this.tenantId}`;
+  this.qrcode = await QRCode.toDataURL(qrData);
+  return this.qrcode;
+};
+
 userSchema.pre('save', async function (next) {
   if (this.isNew) {
-    const qrData = `${this._id}`;
+    // Gerar QR code no formato: userId|tenantId para isolamento multi-tenant
+    const qrData = `${this._id}|${this.tenantId}`;
     this.qrcode = await QRCode.toDataURL(qrData);
   }
   next();
