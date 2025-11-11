@@ -1,5 +1,5 @@
-const Subscription = require('../Models/subscriptionModel');
-const Tenant = require('../Models/tenantModel');
+import Subscription from '../Models/subscriptionModel.js';
+import Tenant from '../Models/tenantModel.js';
 
 /**
  * Middleware para verificar se o tenant tem assinatura ativa
@@ -132,7 +132,7 @@ const allowTrialOrActiveSubscription = async (req, res, next) => {
   }
 };
 
-module.exports = {
+export {
   requireActiveSubscription,
   allowTrialOrActiveSubscription
 };
