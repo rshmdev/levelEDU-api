@@ -101,33 +101,6 @@ const PLANS_CONFIG = {
       maxTeachers: 50,
       maxAdmins: 10
     }
-  },
-  enterprise: {
-    id: 'enterprise',
-    name: 'Enterprise',
-    description: 'Solução empresarial customizada com suporte dedicado, API completa e implementação personalizada',
-    priceMonthly: 199900, // R$ 1.999,00 em centavos (preço inicial)
-    priceYearly: 1999000, // R$ 19.990,00 em centavos (preço inicial)
-    stripePriceMonthlyId: process.env.STRIPE_ENTERPRISE_PRICE_MONTHLY,
-    stripePriceYearlyId: process.env.STRIPE_ENTERPRISE_PRICE_YEARLY,
-    features: [
-      'Usuários ilimitados',
-      'Recursos e funcionalidades ilimitados',
-      'Relatórios personalizados sob demanda',
-      'White-label completo e customização total',
-      'API completa com documentação dedicada',
-      'Suporte 24/7 com SLA garantido',
-      'Gerente de conta exclusivo',
-      'Customização e desenvolvimento sob medida',
-      'Treinamento personalizado presencial/online',
-      'Implementação assistida com consultoria',
-      'Infraestrutura dedicada opcional'
-    ],
-    limits: {
-      maxStudents: -1,
-      maxTeachers: -1,
-      maxAdmins: -1
-    }
   }
 };
 
