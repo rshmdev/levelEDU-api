@@ -5,10 +5,17 @@ import User from '../Models/userModel.js';
 export const getUserAttitudes = async (req, res) => {
   try {
     const { userId } = req.params;
+    const tenantId = req.headers['x-tenant-id'];
 
-    // Busca todas as atitudes associadas ao usuário na tabela de relacionamentos
-    const assignments = await AttitudeAssignment.find({ studentId: userId })
-      .populate('attitudeId', 'isPositive coins xp description title') // Popula os dados da atitude
+    if (!tenantId) {
+      return res.status(400).json({ message: 'Header x-tenant-id é obrigatório!' });
+    }
+
+    // Busca todas as atitudes associadas ao usuário na tabela de relacionamentos com filtro de tenant
+    const assignments = await AttitudeAssignment.find({ 
+      studentId: userId,
+      tenantId: tenantId 
+    }).populate('attitudeId', 'isPositive coins xp description title') // Popula os dados da atitude
 
     if (!assignments.length) {
       return res.status(200).json([]); // Retorna array vazio se não houver atitudes
@@ -39,23 +46,31 @@ export const getUserAttitudes = async (req, res) => {
 export const claimAttitudeReward = async (req, res) => {
   try {
     const { userId, attitudeId } = req.params;
+    const tenantId = req.headers['x-tenant-id'];
 
-    // Verifica se a relação entre aluno e atitude existe
-    const assignment = await AttitudeAssignment.findOne({ studentId: userId, attitudeId })
-      .populate('attitudeId', 'coins xp');
+    if (!tenantId) {
+      return res.status(400).json({ message: 'Header x-tenant-id é obrigatório!' });
+    }
+
+    // Verifica se a relação entre aluno e atitude existe com filtro de tenant
+    const assignment = await AttitudeAssignment.findOne({ 
+      studentId: userId, 
+      attitudeId,
+      tenantId: tenantId 
+    }).populate('attitudeId', 'coins xp');
 
     if (!assignment) {
-      return res.status(404).json({ message: 'Atitude não encontrada ou não atribuída ao aluno!' });
+      return res.status(404).json({ message: 'Atitude não encontrada ou não atribuída ao aluno neste tenant!' });
     }
 
     if (assignment.isClaimed) {
       return res.status(400).json({ message: 'A recompensa já foi resgatada!' });
     }
 
-    // Busca o usuário para atualizar as recompensas
-    const user = await User.findById(userId);
+    // Busca o usuário para atualizar as recompensas com filtro de tenant
+    const user = await User.findOne({ _id: userId, tenantId: tenantId });
     if (!user) {
-      return res.status(404).json({ message: 'Usuário não encontrado!' });
+      return res.status(404).json({ message: 'Usuário não encontrado neste tenant!' });
     }
 
     // Adiciona os prêmios ao usuário

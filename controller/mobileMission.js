@@ -6,17 +6,23 @@ import User from '../Models/userModel.js';
 export const getAvailableMissions = async (req, res) => {
   try {
     const { userId } = req.params;
+    const tenantId = req.headers['x-tenant-id'];
 
-    const user = await User.findById(userId).populate('completedMissions');
-    if (!user) return res.status(404).json({ message: 'Usuário não encontrado!' });
+    if (!tenantId) {
+      return res.status(400).json({ message: 'Header x-tenant-id é obrigatório!' });
+    }
+
+    const user = await User.findOne({ _id: userId, tenantId: tenantId }).populate('completedMissions');
+    if (!user) return res.status(404).json({ message: 'Usuário não encontrado neste tenant!' });
 
     const completedMissionIds = user.completedMissions.map((mission) => mission._id);
 
-    // Filtrar missões que o usuário ainda não completou
+    // Filtrar missões que o usuário ainda não completou com filtro de tenant
     const availableMissions = await Mission.find({
       _id: { $nin: completedMissionIds }, // Exclui as missões já concluídas
       isCompleted: false, // Missões que ainda não foram concluídas globalmente
       classId: user.class._id, // Missões disponíveis para a turma do usuário
+      tenantId: tenantId // Filtro de tenant
     });
 
     res.status(200).json(availableMissions);
@@ -28,14 +34,19 @@ export const getAvailableMissions = async (req, res) => {
 export const completeMission = async (req, res) => {
   try {
     const { id } = req.params;
+    const tenantId = req.headers['x-tenant-id'];
 
-    const mission = await Mission.findByIdAndUpdate(
-      id,
+    if (!tenantId) {
+      return res.status(400).json({ message: 'Header x-tenant-id é obrigatório!' });
+    }
+
+    const mission = await Mission.findOneAndUpdate(
+      { _id: id, tenantId: tenantId },
       { isCompleted: true },
       { new: true }
     );
 
-    if (!mission) return res.status(404).json({ message: 'Missão não encontrada!' });
+    if (!mission) return res.status(404).json({ message: 'Missão não encontrada neste tenant!' });
 
     res.status(200).json({ message: 'Missão concluída com sucesso!', mission });
   } catch (error) {

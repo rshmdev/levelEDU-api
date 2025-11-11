@@ -5,25 +5,29 @@ import Purchase from '../Models/purchaseModel.js';
 // Comprar Produto
 export const purchaseProduct = async (req, res) => {
   try {
-    const { userId, productId } = req.body;
+    const { userId, productId, tenantId } = req.body;
 
-    const product = await Product.findById(productId);
+    if (!tenantId) {
+      return res.status(400).json({ message: 'tenantId é obrigatório!' });
+    }
+
+    const product = await Product.findOne({ _id: productId, tenantId: tenantId });
     if (!product)
-      return res.status(404).json({ message: 'Produto não encontrado!' });
+      return res.status(404).json({ message: 'Produto não encontrado neste tenant!' });
 
     if (product.stock <= 0) {
       return res.status(400).json({ message: 'Produto esgotado!' });
     }
 
-    const user = await User.findById(userId);
+    const user = await User.findOne({ _id: userId, tenantId: tenantId });
     if (!user)
-      return res.status(404).json({ message: 'Usuário não encontrado!' });
+      return res.status(404).json({ message: 'Usuário não encontrado neste tenant!' });
 
     if (user.coins < product.price) {
       return res.status(400).json({ message: 'Moedas insuficientes!' });
     }
 
-    const userPurchases = await Purchase.find({ userId, productId });
+    const userPurchases = await Purchase.find({ userId, productId, tenantId: tenantId });
     if (userPurchases.length >= product.maxPerUser) {
       return res
         .status(400)
@@ -31,7 +35,11 @@ export const purchaseProduct = async (req, res) => {
     }
 
     // Cria a compra
-    const purchase = new Purchase({ userId, productId });
+    const purchase = new Purchase({ 
+      userId, 
+      productId,
+      tenantId: tenantId  // Adicionar tenantId
+    });
     await purchase.save();
 
     const populatedPurchase = await Purchase.findById(purchase._id)
@@ -59,12 +67,17 @@ export const purchaseProduct = async (req, res) => {
 export const getProducts = async (req, res) => {
   try {
     const { userId } = req.params;
+    const tenantId = req.headers['x-tenant-id'];
 
-    // Buscar o usuário pelo ID
-    const user = await User.findById(userId).populate('class'); // Popula a classe do usuário
+    if (!tenantId) {
+      return res.status(400).json({ message: 'Header x-tenant-id é obrigatório!' });
+    }
+
+    // Buscar o usuário pelo ID com filtro de tenant
+    const user = await User.findOne({ _id: userId, tenantId: tenantId }).populate('class');
 
     if (!user) {
-      return res.status(404).json({ message: 'Usuário não encontrado!' });
+      return res.status(404).json({ message: 'Usuário não encontrado neste tenant!' });
     }
 
     if (!user.class || !user.class._id) {
@@ -73,8 +86,11 @@ export const getProducts = async (req, res) => {
 
     const userClassId = user.class._id;
 
-    // Filtrar produtos pela classe do usuário
-    const products = await Product.find({ classId: userClassId });
+    // Filtrar produtos pela classe do usuário e tenant
+    const products = await Product.find({ 
+      classId: userClassId,
+      tenantId: tenantId 
+    });
 
     res.status(200).json(products);
   } catch (error) {
