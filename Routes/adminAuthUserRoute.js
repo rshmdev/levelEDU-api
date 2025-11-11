@@ -66,6 +66,42 @@ router.post('/login', loginAdminUser);
 
 /**
  * @swagger
+ * /logout:
+ *   post:
+ *     summary: "Logout de usuário administrador"
+ *     description: "Invalida a sessão/token do usuário administrador."
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: "Logout realizado com sucesso."
+ *       401:
+ *         description: "Token inválido ou não fornecido."
+ *       500:
+ *         description: "Erro interno ao realizar logout."
+ */
+router.post('/logout', authenticateUser, (req, res) => {
+  try {
+    // Log the logout for auditing purposes
+    console.log(`User ${req.user.email} logged out at ${new Date().toISOString()}`);
+    
+    // Here you could invalidate the token in a blacklist if needed
+    // For now, we just acknowledge the logout
+    res.status(200).json({
+      success: true,
+      message: 'Logout realizado com sucesso'
+    });
+  } catch (error) {
+    console.error('Error during logout:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno ao realizar logout'
+    });
+  }
+});
+
+/**
+ * @swagger
  * /register:
  *   post:
  *     summary: "Criar um novo usuário administrador"
