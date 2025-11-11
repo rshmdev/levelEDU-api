@@ -1,4 +1,4 @@
-import { Model } from '../Models/Model.js';
+import mongoose from 'mongoose';
 
 // Definição dos limites por plano
 const PLAN_LIMITS = {
@@ -55,7 +55,7 @@ const PLAN_LIMITS = {
 // Função para buscar assinatura ativa do tenant
 async function getTenantSubscription(tenantId) {
   try {
-    const subscription = await Model.db.collection('subscriptions').findOne({
+    const subscription = await mongoose.connection.db.collection('subscriptions').findOne({
       tenantId: tenantId,
       status: { $in: ['active', 'trialing'] }
     });
@@ -71,34 +71,34 @@ async function getTenantSubscription(tenantId) {
 async function getCurrentUsage(tenantId) {
   try {
     const [students, teachers, admins, classes, missions, products, attitudes] = await Promise.all([
-      Model.db.collection('users').countDocuments({ 
+      mongoose.connection.db.collection('users').countDocuments({ 
         tenantId: tenantId,
         role: 'student',
         isActive: true 
       }),
-      Model.db.collection('adminusers').countDocuments({ 
+      mongoose.connection.db.collection('adminusers').countDocuments({ 
         tenantId: tenantId,
         role: 'teacher',
         isActive: true 
       }),
-      Model.db.collection('adminusers').countDocuments({ 
+      mongoose.connection.db.collection('adminusers').countDocuments({ 
         tenantId: tenantId,
         role: { $in: ['tenant_admin', 'admin'] },
         isActive: true 
       }),
-      Model.db.collection('classes').countDocuments({ 
+      mongoose.connection.db.collection('classes').countDocuments({ 
         tenantId: tenantId,
         isActive: true 
       }),
-      Model.db.collection('missions').countDocuments({ 
+      mongoose.connection.db.collection('missions').countDocuments({ 
         tenantId: tenantId,
         isActive: true 
       }),
-      Model.db.collection('products').countDocuments({ 
+      mongoose.connection.db.collection('products').countDocuments({ 
         tenantId: tenantId,
         isActive: true 
       }),
-      Model.db.collection('attitudes').countDocuments({ 
+      mongoose.connection.db.collection('attitudes').countDocuments({ 
         tenantId: tenantId,
         isActive: true 
       })
