@@ -29,6 +29,8 @@ import WebhookRouter from './webhookRoute.js'
 
 import UsageRouter from './usageRoute.js'
 
+import SpecialOffersRouter from './specialOffersRoute.js'
+
 export default {
   AdminMissionRouter,
   MobileMissionRouter,
@@ -46,5 +48,6 @@ export default {
   BillingRouter,
   SubscriptionRouter,
   WebhookRouter,
-  UsageRouter
+  UsageRouter,
+  SpecialOffersRouter
 };

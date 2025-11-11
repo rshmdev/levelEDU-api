@@ -59,6 +59,9 @@ app.use('/api/billing', Router.BillingRouter);
 // Stripe subscription routes
 app.use('/api/subscriptions', Router.SubscriptionRouter);
 
+// Special offers routes
+app.use('/api/special-offers', Router.SpecialOffersRouter);
+
 // Webhook routes já foram registradas acima
 
 export default app;
